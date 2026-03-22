@@ -233,15 +233,16 @@ function previewLogoUrl(url) {
 async function saveLogoFromUrl() {
   const url = document.getElementById('s-logourl') ? document.getElementById('s-logourl').value.trim() : '';
   if (!url) { showToast('Ingresa una URL válida', 'error'); return; }
+  showToast('Guardando logo...', 'info');
   try {
+    // Guardar en Firebase para que TODOS lo vean
     await db.collection('settings').doc('logo').set({ url: url });
     localStorage.setItem('mtdy_logo', url);
     loadLogoPreviewAdmin();
-    showToast('Logo guardado ✅ — visible para todos', 'success');
+    showToast('✅ Logo guardado — visible para todos los dispositivos', 'success');
   } catch(e) {
-    localStorage.setItem('mtdy_logo', url);
-    loadLogoPreviewAdmin();
-    showToast('Logo guardado localmente', 'info');
+    console.error('Error guardando logo:', e);
+    showToast('Error al guardar el logo: ' + e.message, 'error');
   }
 }
 

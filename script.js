@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderProducts();
   updateCartBadge();
   loadSocialLinks();
-  loadLogoDisplay();
+  await loadLogoDisplay();
   checkUserSession();
 });
 
@@ -371,21 +371,20 @@ function loadSocialLinks() {
 async function loadLogoDisplay() {
   const el = document.getElementById('logo-display');
   if (!el) return;
+  // Siempre poner logo por defecto primero
+  el.innerHTML = '<div class="logo-default"><span class="logo-icon">🎂</span></div>';
   try {
-    const doc = await db.collection('settings').doc('logo').get();
-    if (doc.exists && doc.data().url) {
-      const url = doc.data().url;
-      localStorage.setItem('mtdy_logo', url);
-      el.innerHTML = '<img src="'+url+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
-    } else {
-      const localLogo = localStorage.getItem('mtdy_logo');
-      if (localLogo) el.innerHTML = '<img src="'+localLogo+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
-      else el.innerHTML = '<div class="logo-default"><span class="logo-icon">🎂</span></div>';
+    // Cargar logo desde Firebase
+    const snap = await db.collection('settings').doc('logo').get();
+    if (snap.exists) {
+      const url = snap.data().url;
+      if (url) {
+        el.innerHTML = '<img src="'+url+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
+        return;
+      }
     }
   } catch(e) {
-    const localLogo = localStorage.getItem('mtdy_logo');
-    if (localLogo) el.innerHTML = '<img src="'+localLogo+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
-    else el.innerHTML = '<div class="logo-default"><span class="logo-icon">🎂</span></div>';
+    console.log('Logo Firebase error:', e);
   }
 }
 
