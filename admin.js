@@ -230,15 +230,25 @@ function previewLogoUrl(url) {
   else loadLogoPreviewAdmin();
 }
 
-function saveLogoFromUrl() {
+async function saveLogoFromUrl() {
   const url = document.getElementById('s-logourl') ? document.getElementById('s-logourl').value.trim() : '';
   if (!url) { showToast('Ingresa una URL válida', 'error'); return; }
-  localStorage.setItem('mtdy_logo', url);
-  loadLogoPreviewAdmin();
-  showToast('Logo guardado ✅', 'success');
+  try {
+    await db.collection('settings').doc('logo').set({ url: url });
+    localStorage.setItem('mtdy_logo', url);
+    loadLogoPreviewAdmin();
+    showToast('Logo guardado ✅ — visible para todos', 'success');
+  } catch(e) {
+    localStorage.setItem('mtdy_logo', url);
+    loadLogoPreviewAdmin();
+    showToast('Logo guardado localmente', 'info');
+  }
 }
 
-function removeLogo() {
+async function removeLogo() {
+  try {
+    await db.collection('settings').doc('logo').delete();
+  } catch(e) {}
   localStorage.removeItem('mtdy_logo');
   if (document.getElementById('s-logourl')) document.getElementById('s-logourl').value = '';
   loadLogoPreviewAdmin(); showToast('Logo eliminado', 'info');

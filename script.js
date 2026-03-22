@@ -368,12 +368,25 @@ function loadSocialLinks() {
   container.innerHTML = links.join('');
 }
 
-function loadLogoDisplay() {
-  const logoUrl = localStorage.getItem('mtdy_logo');
+async function loadLogoDisplay() {
   const el = document.getElementById('logo-display');
   if (!el) return;
-  if (logoUrl) el.innerHTML = '<img src="'+logoUrl+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
-  else el.innerHTML = '<div class="logo-default"><span class="logo-icon">🎂</span></div>';
+  try {
+    const doc = await db.collection('settings').doc('logo').get();
+    if (doc.exists && doc.data().url) {
+      const url = doc.data().url;
+      localStorage.setItem('mtdy_logo', url);
+      el.innerHTML = '<img src="'+url+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
+    } else {
+      const localLogo = localStorage.getItem('mtdy_logo');
+      if (localLogo) el.innerHTML = '<img src="'+localLogo+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
+      else el.innerHTML = '<div class="logo-default"><span class="logo-icon">🎂</span></div>';
+    }
+  } catch(e) {
+    const localLogo = localStorage.getItem('mtdy_logo');
+    if (localLogo) el.innerHTML = '<img src="'+localLogo+'" alt="Logo" style="height:50px;width:50px;object-fit:contain;border-radius:50%;border:2px solid var(--accent);" />';
+    else el.innerHTML = '<div class="logo-default"><span class="logo-icon">🎂</span></div>';
+  }
 }
 
 function openModal(id) { const m=document.getElementById(id); if(m){m.style.display='flex';setTimeout(function(){m.classList.add('open');},10);} document.body.style.overflow='hidden'; }
