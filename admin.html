@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Mil Detalles Las Tres Y</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="admin-body">
+
+<div id="toast-container"></div>
+
+<!-- LOGIN -->
+<div id="admin-login-screen" class="admin-login-screen">
+  <div class="admin-login-card">
+    <div class="admin-login-logo">🎂</div>
+    <h2>Panel Administrador</h2>
+    <p>Mil Detalles Las Tres Y</p>
+    <div class="form-row"><label>Usuario</label><input type="text" id="adm-user" placeholder="admin" /></div>
+    <div class="form-row"><label>Contraseña</label><input type="password" id="adm-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter') adminLogin()" /></div>
+    <button class="btn-primary-full" onclick="adminLogin()">Ingresar</button>
+    <a href="index.html" class="back-store"><i class="fas fa-arrow-left"></i> Volver a la tienda</a>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" style="display:none;">
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo" onclick="location.href='index.html'">
+      <span>🎂</span><small>Admin</small>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="snav-btn active" onclick="adminTab('dashboard',this)"><i class="fas fa-chart-line"></i> Dashboard</button>
+      <button class="snav-btn" onclick="adminTab('products',this)"><i class="fas fa-box"></i> Productos</button>
+      <button class="snav-btn" onclick="adminTab('orders',this)"><i class="fas fa-receipt"></i> Pedidos</button>
+      <button class="snav-btn" onclick="adminTab('users',this)"><i class="fas fa-users"></i> Usuarios</button>
+      <button class="snav-btn" onclick="adminTab('settings',this)"><i class="fas fa-cog"></i> Ajustes</button>
+    </nav>
+    <button class="sidebar-logout" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Salir</button>
+  </aside>
+
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <h1 id="admin-page-title">Dashboard</h1>
+      <span><i class="fas fa-user-shield"></i> Administrador</span>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="admin-tab active">
+      <div class="stats-grid">
+        <div class="stat-card"><i class="fas fa-box"></i><div><strong id="stat-products">0</strong><span>Productos</span></div></div>
+        <div class="stat-card"><i class="fas fa-receipt"></i><div><strong id="stat-orders">0</strong><span>Pedidos</span></div></div>
+        <div class="stat-card"><i class="fas fa-users"></i><div><strong id="stat-users">0</strong><span>Usuarios</span></div></div>
+        <div class="stat-card"><i class="fas fa-heart"></i><div><strong id="stat-revenue">$0</strong><span>Ventas est.</span></div></div>
+      </div>
+      <div class="recent-section">
+        <h3>Productos con bajo stock</h3>
+        <div id="low-stock-list"></div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="tab-products" class="admin-tab" style="display:none;">
+      <div class="tab-toolbar">
+        <button class="btn-add-product" onclick="openProductForm()"><i class="fas fa-plus"></i> Agregar producto</button>
+        <input type="text" id="admin-search" placeholder="Buscar producto..." oninput="renderAdminProducts()" />
+      </div>
+      <div id="admin-products-list"></div>
+    </div>
+
+    <!-- ORDERS -->
+    <div id="tab-orders" class="admin-tab" style="display:none;">
+      <div id="orders-list"></div>
+    </div>
+
+    <!-- USERS -->
+    <div id="tab-users" class="admin-tab" style="display:none;">
+      <div id="users-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" class="admin-tab" style="display:none;">
+      <div class="settings-grid">
+        <div class="settings-card">
+          <h3><i class="fas fa-image"></i> Logo de la tienda</h3>
+          <div class="logo-preview" id="logo-preview-admin"></div>
+          <div class="form-row">
+            <label>URL del logo (desde imgbb.com)</label>
+            <input type="url" id="s-logourl" placeholder="https://i.ibb.co/xxxx/logo.png" oninput="previewLogoUrl(this.value)" />
+          </div>
+          <button class="btn-primary-full" onclick="saveLogoFromUrl()"><i class="fas fa-save"></i> Guardar logo</button>
+          <button class="btn-danger-sm" onclick="removeLogo()">Quitar logo</button>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fas fa-share-alt"></i> Redes Sociales</h3>
+          <div class="form-row"><label>Facebook URL</label><input type="url" id="s-facebook" placeholder="https://facebook.com/..." /></div>
+          <div class="form-row"><label>Instagram URL</label><input type="url" id="s-instagram" placeholder="https://instagram.com/..." /></div>
+          <div class="form-row"><label>WhatsApp número</label><input type="text" id="s-whatsapp" placeholder="573165389152" /></div>
+          <div class="form-row"><label>TikTok URL</label><input type="url" id="s-tiktok" placeholder="https://tiktok.com/..." /></div>
+          <button class="btn-primary-full" onclick="saveSocials()">Guardar redes</button>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fas fa-store"></i> Info de la tienda</h3>
+          <div class="form-row"><label>Nombre</label><input type="text" id="s-storename" placeholder="Mil Detalles Las Tres Y" /></div>
+          <div class="form-row"><label>Descripción</label><textarea id="s-storedesc" rows="3" placeholder="Descripción..."></textarea></div>
+          <div class="form-row"><label>Correo contacto</label><input type="email" id="s-email" placeholder="contacto@email.com" /></div>
+          <button class="btn-primary-full" onclick="saveStoreInfo()">Guardar info</button>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fas fa-lock"></i> Cambiar contraseña</h3>
+          <div class="form-row"><label>Contraseña actual</label><input type="password" id="s-oldpass" /></div>
+          <div class="form-row"><label>Nueva contraseña</label><input type="password" id="s-newpass" /></div>
+          <div class="form-row"><label>Confirmar</label><input type="password" id="s-confpass" /></div>
+          <button class="btn-primary-full" onclick="changeAdminPass()">Cambiar contraseña</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- PRODUCT FORM MODAL -->
+<div class="modal-overlay" id="product-form-modal" onclick="closeProductForm(event)">
+  <div class="modal-box product-form-box">
+    <div class="cart-header">
+      <h2 id="product-form-title"><i class="fas fa-box"></i> Agregar producto</h2>
+      <button class="modal-close" onclick="closeProductForm()"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="product-form" onsubmit="saveProduct(event)">
+      <input type="hidden" id="pf-id" />
+      <div class="form-grid">
+        <div class="form-row"><label>Nombre del producto *</label><input type="text" id="pf-name" required placeholder="Nombre del producto" /></div>
+        <div class="form-row">
+          <label>Categoría *</label>
+          <select id="pf-category" required>
+            <option value="">Seleccionar...</option>
+            <option value="reposteria">Repostería</option>
+            <option value="detalles">Detalles</option>
+            <option value="joyeria">Joyería</option>
+            <option value="decoraciones">Decoraciones</option>
+            <option value="otros">Otros</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Precio (COP) *</label><input type="number" id="pf-price" required placeholder="0" min="0" /></div>
+        <div class="form-row"><label>Precio anterior (tachado)</label><input type="number" id="pf-oldprice" placeholder="0" min="0" /></div>
+        <div class="form-row"><label>Stock *</label><input type="number" id="pf-stock" required placeholder="10" min="0" /></div>
+      </div>
+      <div class="form-row"><label>Descripción</label><textarea id="pf-desc" rows="3" placeholder="Describe el producto, ingredientes, medidas, personalización disponible..."></textarea></div>
+      <div class="form-row">
+        <label>Imagen del producto (URL de imgbb.com) *</label>
+        <input type="url" id="pf-imgurl" placeholder="https://i.ibb.co/xxxx/imagen.jpg" oninput="previewImgUrl(this.value)" />
+        <small style="color:var(--gray);font-size:.78rem;margin-top:4px;display:block;">
+          📸 Sube tu foto en <strong>imgbb.com</strong> → copia el "Direct link" → pégalo aquí
+        </small>
+        <div class="img-preview-box">
+          <img id="pf-img-preview" src="" alt="" style="display:none;" />
+        </div>
+      </div>
+      <div class="form-row">
+        <label><input type="checkbox" id="pf-featured" /> Producto destacado ⭐</label>
+      </div>
+      <button type="submit" class="btn-primary-full"><i class="fas fa-save"></i> Guardar producto</button>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>

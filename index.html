@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Repostería Mil Detalles Las Tres Y</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- HEADER -->
+<header id="main-header">
+  <div class="header-top">
+    <div class="logo-area" onclick="goHome()">
+      <div id="logo-display">
+        <div class="logo-default">
+          <span class="logo-icon">🎂</span>
+        </div>
+      </div>
+      <div class="store-name">
+        <span class="store-title">Repostería</span>
+        <span class="store-subtitle">Mil Detalles Las Tres Y</span>
+      </div>
+    </div>
+    <div class="header-search">
+      <input type="text" id="search-input" placeholder="Buscar productos..." oninput="filterProducts()" />
+      <i class="fas fa-search"></i>
+    </div>
+    <div class="header-actions">
+      <button class="btn-user" onclick="openUserModal()">
+        <i class="fas fa-user"></i>
+        <span id="user-label">Entrar</span>
+      </button>
+      <button class="btn-cart" onclick="openCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+  <nav class="category-nav">
+    <button class="cat-btn active" data-cat="all" onclick="setCategory('all',this)"><i class="fas fa-th"></i> Todos</button>
+    <button class="cat-btn" data-cat="reposteria" onclick="setCategory('reposteria',this)"><i class="fas fa-birthday-cake"></i> Repostería</button>
+    <button class="cat-btn" data-cat="detalles" onclick="setCategory('detalles',this)"><i class="fas fa-gift"></i> Detalles</button>
+    <button class="cat-btn" data-cat="joyeria" onclick="setCategory('joyeria',this)"><i class="fas fa-gem"></i> Joyería</button>
+    <button class="cat-btn" data-cat="decoraciones" onclick="setCategory('decoraciones',this)"><i class="fas fa-star"></i> Decoraciones</button>
+    <button class="cat-btn" data-cat="otros" onclick="setCategory('otros',this)"><i class="fas fa-box-open"></i> Otros</button>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero-section">
+  <div class="hero-deco deco1"></div>
+  <div class="hero-deco deco2"></div>
+  <div class="hero-deco deco3"></div>
+  <div class="hero-content">
+    <p class="hero-tag">✨ Hecho con amor</p>
+    <h1>Dulces momentos<br/><em>para recordar</em></h1>
+    <p class="hero-sub">Repostería artesanal, detalles únicos, joyería y decoraciones. Todo elaborado con dedicación y amor para ti.</p>
+    <button class="hero-btn" onclick="scrollToCatalog()">Ver nuestros productos <i class="fas fa-arrow-down"></i></button>
+  </div>
+</section>
+
+<!-- CATALOG -->
+<main class="catalog-section" id="catalog">
+  <div class="section-header">
+    <h2 id="catalog-title">✨ Todos los Productos</h2>
+    <span id="product-count" class="prod-count"></span>
+  </div>
+  <div class="products-grid" id="products-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <i class="fas fa-search"></i>
+    <p>No se encontraron productos</p>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">🎂 Mil Detalles</div>
+      <p>Creaciones artesanales hechas con amor. Repostería, joyería, detalles y decoraciones para cada momento especial.</p>
+      <div class="social-links" id="social-links"></div>
+    </div>
+    <div class="footer-links">
+      <h4>Categorías</h4>
+      <ul>
+        <li><a href="#" onclick="setCategory('reposteria');return false;">Repostería</a></li>
+        <li><a href="#" onclick="setCategory('detalles');return false;">Detalles</a></li>
+        <li><a href="#" onclick="setCategory('joyeria');return false;">Joyería</a></li>
+        <li><a href="#" onclick="setCategory('decoraciones');return false;">Decoraciones</a></li>
+        <li><a href="#" onclick="setCategory('otros');return false;">Otros</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <h4>Contáctanos</h4>
+      <p><i class="fab fa-whatsapp"></i> 3165389152</p>
+      <p><i class="fas fa-heart"></i> Hecho con amor 💕</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Repostería Mil Detalles Las Tres Y — Todos los derechos reservados</p>
+    <a href="admin.html" class="admin-link"><i class="fas fa-lock"></i> Admin</a>
+  </div>
+</footer>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="product-modal" onclick="closeProductModal(event)">
+  <div class="modal-box product-detail-box">
+    <button class="modal-close" onclick="closeProductModal()"><i class="fas fa-times"></i></button>
+    <div class="product-detail-grid">
+      <div class="product-detail-img">
+        <img id="modal-img" src="" alt="" />
+        <span class="modal-category-badge" id="modal-category"></span>
+      </div>
+      <div class="product-detail-info">
+        <h2 id="modal-name"></h2>
+        <p class="modal-price" id="modal-price"></p>
+        <p class="modal-desc" id="modal-desc"></p>
+        <div class="stock-info" id="modal-stock"></div>
+        <div class="qty-row">
+          <label>Cantidad:</label>
+          <div class="qty-control">
+            <button onclick="changeQty(-1)">−</button>
+            <span id="modal-qty">1</span>
+            <button onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <button class="btn-add-cart" onclick="addToCartFromModal()"><i class="fas fa-shopping-bag"></i> Agregar al carrito</button>
+        <button class="btn-wa-direct" onclick="buyDirectWhatsApp()"><i class="fab fa-whatsapp"></i> Pedir por WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cart-modal" onclick="closeCart(event)">
+  <div class="modal-box cart-box">
+    <div class="cart-header">
+      <h2><i class="fas fa-shopping-bag"></i> Mi Carrito</h2>
+      <button class="modal-close" onclick="closeCart()"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="cart-items-list"></div>
+    <div class="cart-footer" id="cart-footer">
+      <div class="cart-total"><span>Subtotal:</span><strong id="cart-total-amount">$0</strong></div>
+      <button class="btn-checkout" onclick="openCheckout()"><i class="fas fa-comments"></i> Proceder al pedido</button>
+      <button class="btn-clear-cart" onclick="clearCart()"><i class="fas fa-trash"></i> Vaciar carrito</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal" onclick="closeCheckout(event)">
+  <div class="modal-box checkout-box">
+    <div class="cart-header">
+      <h2><i class="fas fa-map-marker-alt"></i> Datos de entrega</h2>
+      <button class="modal-close" onclick="closeCheckout()"><i class="fas fa-times"></i></button>
+    </div>
+    <form id="checkout-form" onsubmit="submitOrder(event)">
+      <div class="form-row"><label>Nombre completo *</label><input type="text" id="f-name" placeholder="Tu nombre completo" required /></div>
+      <div class="form-row"><label>Dirección *</label><input type="text" id="f-address" placeholder="Dirección de entrega" required /></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Ciudad *</label><input type="text" id="f-city" placeholder="Ciudad" required /></div>
+        <div class="form-row"><label>Teléfono *</label><input type="tel" id="f-phone" placeholder="Número de teléfono" required /></div>
+      </div>
+      <div class="form-row"><label>Correo electrónico (opcional)</label><input type="email" id="f-email" placeholder="correo@email.com" /></div>
+      <div class="form-row"><label>Observaciones / Personalización</label><textarea id="f-notes" placeholder="Ej: Color del pastel, mensaje especial, fecha de entrega..." rows="3"></textarea></div>
+      <div class="checkout-notice">
+        <i class="fas fa-info-circle"></i>
+        <span>El costo de envío será coordinado directamente con el vendedor por WhatsApp según tu ubicación.</span>
+      </div>
+      <div class="checkout-summary" id="checkout-summary"></div>
+      <button type="submit" class="btn-wa-order"><i class="fab fa-whatsapp"></i> Enviar pedido por WhatsApp</button>
+    </form>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-overlay" id="user-modal" onclick="closeUserModal(event)">
+  <div class="modal-box user-box">
+    <button class="modal-close" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
+    <div class="user-tabs">
+      <button class="utab active" id="tab-login" onclick="switchUserTab('login')">Iniciar sesión</button>
+      <button class="utab" id="tab-register" onclick="switchUserTab('register')">Registrarse</button>
+    </div>
+    <div id="login-form-section">
+      <h3>Bienvenida de vuelta 💕</h3>
+      <div class="form-row"><label>Usuario o Correo</label><input type="text" id="login-user" placeholder="usuario o correo" /></div>
+      <div class="form-row"><label>Contraseña</label><input type="password" id="login-pass" placeholder="contraseña" /></div>
+      <button class="btn-primary-full" onclick="doLogin()">Entrar</button>
+    </div>
+    <div id="register-form-section" style="display:none;">
+      <h3>Crear cuenta 🎂</h3>
+      <div class="form-row"><label>Nombre completo</label><input type="text" id="reg-name" placeholder="Tu nombre" /></div>
+      <div class="form-row"><label>Usuario</label><input type="text" id="reg-user" placeholder="nombre de usuario" /></div>
+      <div class="form-row"><label>Correo</label><input type="email" id="reg-email" placeholder="correo@email.com" /></div>
+      <div class="form-row"><label>Contraseña</label><input type="password" id="reg-pass" placeholder="mínimo 6 caracteres" /></div>
+      <button class="btn-primary-full" onclick="doRegister()">Crear cuenta</button>
+    </div>
+    <div id="logged-section" style="display:none;">
+      <div class="logged-avatar"><i class="fas fa-user-circle"></i></div>
+      <h3 id="logged-name">Hola!</h3>
+      <p id="logged-email-display" style="color:var(--gray);font-size:.85rem;text-align:center;"></p>
+      <button class="btn-primary-full" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<a class="whatsapp-fab" href="https://wa.me/573165389152?text=Hola!%20Quiero%20información%20sobre%20sus%20productos." target="_blank">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
